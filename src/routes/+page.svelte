@@ -45,10 +45,12 @@
 				// Generate the Blob URL for the iframe
 				const scriptTagEnd = '</scr' + 'ipt>';
 				const scriptTagStart = '<scr' + 'ipt>';
+        const styleTagStart = '<st' + 'yle>';
+        const styleTagEnd = '</st' + 'yle>';
 				const fullCode = `<!DOCTYPE html>
         <html>
         <head>
-          <style>${cssCode}</style>
+          ${styleTagStart}${cssCode}${styleTagEnd}
         </head>
         <body>
           ${htmlCode}
