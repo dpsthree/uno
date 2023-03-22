@@ -5,15 +5,15 @@
 	let iframeBlobUrl = '';
 	let searchQuery = '';
 
-	function updateIframe(result) {
+	function updateIframe(text: string) {
 		const htmlRegex = /HTML:\n*(```)?([\s\S]*?)(?:```|(?=\n*CSS:))/;
 		const cssRegex = /CSS:\n*(```)?([\s\S]*?)(?:```|(?=\n*(?:JavaScript|Javascript):))/;
 		const jsRegex =
 			/Javascript|javascript|JavaScript:\n*(```)?([\s\S]*?)(?:```|(?=\n*(?:JavaScript|Javascript):))/;
 
-		const htmlCode = (result.answer.match(htmlRegex) || [])[2] || '';
-		const cssCode = (result.answer.match(cssRegex) || [])[2] || '';
-		const jsCode = (result.answer.match(jsRegex) || [])[2] || '';
+		const htmlCode = (text.match(htmlRegex) || [])[2] || '';
+		const cssCode = (text.match(cssRegex) || [])[2] || '';
+		const jsCode = (text.match(jsRegex) || [])[2] || '';
 
 		// Generate the Blob URL for the iframe
 		const scriptTagEnd = '</scr' + 'ipt>';
@@ -71,13 +71,13 @@
 				// Handle the successful response
 				conversation.assistant = { role: 'assistant', content: result.answer };
 				conversationHistory.update((history) => [...history, conversation]);
-				updateIframe(result);
+				updateIframe(result.answer);
 			}
 		}
 	}
 	function handleLoadCode(event) {
 		const { entry } = event.detail;
-		updateIframe({ answer: entry.content });
+		updateIframe(entry.assistant.content);
 	}
 
 	function handlePublish() {
