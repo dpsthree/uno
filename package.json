@@ -35,5 +35,10 @@
 		"vite": "^4.2.0",
 		"vitest": "^0.25.3"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@types/prismjs": "^1.26.0",
+		"prismjs": "^1.29.0",
+		"svelte-prism": "^1.1.6"
+	}
 }

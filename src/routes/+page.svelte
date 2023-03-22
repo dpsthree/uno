@@ -37,14 +37,14 @@
 		}
 		iframeBlobUrl = URL.createObjectURL(blob);
 	}
-  function createLinearHistory(history: ConversationEntry[]){
-    let linearHistory = [];
-    for(let i = 0; i < history.length; i++){
-      linearHistory.push(history[i].user);
-      linearHistory.push(history[i].assistant);
-    }
-    return linearHistory;
-  }
+	function createLinearHistory(history: ConversationEntry[]) {
+		let linearHistory = [];
+		for (let i = 0; i < history.length; i++) {
+			linearHistory.push(history[i].user);
+			linearHistory.push(history[i].assistant);
+		}
+		return linearHistory;
+	}
 
 	async function handleSearch() {
 		let conversation: ConversationEntry = {
@@ -58,7 +58,7 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				history: [...createLinearHistory($conversationHistory), conversation.user],
+				history: [...createLinearHistory($conversationHistory), conversation.user]
 			})
 		});
 		if (response.status === 500) {
@@ -75,6 +75,7 @@
 			}
 		}
 	}
+
 	function handleLoadCode(event) {
 		const { entry } = event.detail;
 		updateIframe(entry.assistant.content);
@@ -84,9 +85,18 @@
 		// Replace this with the actual logic to publish the generated web application/site
 		console.log('Publishing the generated web application/site');
 	}
+
+	function handleDeleteEntry(event) {
+		const { index } = event.detail;
+		conversationHistory.update(($history) => {
+			$history.splice(index, 1);
+			return [...$history];
+		});
+	}
 </script>
 
 <svelte:head>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/themes/prism.min.css" rel="stylesheet" />
 	<title>AI Editor</title>
 </svelte:head>
 
@@ -132,6 +142,10 @@
 		</div>
 	</div>
 	<div class="flex-grow md:ml-8">
-		<History history={$conversationHistory} on:loadcode={handleLoadCode} />
+		<History
+			history={$conversationHistory}
+			on:loadcode={handleLoadCode}
+			on:deleteentry={handleDeleteEntry}
+		/>
 	</div>
 </main>
