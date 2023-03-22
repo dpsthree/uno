@@ -4,4 +4,4 @@ export interface ConversationEntry {
 	role: string;
 	content: string;
 }
-export const conversationHistory = localStorageStore("conversationHistory", []);
+export const conversationHistory = localStorageStore<ConversationEntry[]>("conversationHistory", []);

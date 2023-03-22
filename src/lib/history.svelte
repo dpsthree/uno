@@ -1,14 +1,31 @@
 <script lang="ts">
 	import { writable, derived } from 'svelte/store';
+	import { createEventDispatcher } from 'svelte';
+
 	import type { ConversationEntry } from './conversation';
 
 	export let history: ConversationEntry[] = [];
+
 	let expanded = writable(new Set());
 	let selectedIndex = writable(-1);
+	const dispatch = createEventDispatcher();
 
 	let expandedContent = derived(expanded, ($expanded) => {
 		return Array.from($expanded.values());
 	});
+
+	function containsCode(content: string) {
+		const htmlRegex = /HTML:\n*(```)?([\s\S]*?)(?:```|(?=\n*CSS:))/;
+		const cssRegex = /CSS:\n*(```)?([\s\S]*?)(?:```|(?=\n*(?:JavaScript|Javascript):))/;
+		const jsRegex =
+			/Javascript|javascript|JavaScript:\n*(```)?([\s\S]*?)(?:```|(?=\n*(?:JavaScript|Javascript):))/;
+
+		const hasHtml = htmlRegex.test(content);
+		const hasCss = cssRegex.test(content);
+		const hasJs = jsRegex.test(content);
+
+		return hasHtml && hasCss && hasJs;
+	}
 
 	function toggleCollapse(index) {
 		expanded.update(($expanded) => {
@@ -24,7 +41,7 @@
 	function loadCode(index) {
 		selectedIndex.set(index);
 		const entry = history[index];
-		// Add your logic here to load the code from the selected history entry
+		dispatch('loadcode', { index, entry });
 	}
 </script>
 
@@ -41,7 +58,7 @@
 			<span class="cursor-pointer" on:click={() => toggleCollapse(index)}>
 				{$expandedContent.includes(index) ? item.content : item.content.slice(0, 50) + '...'}
 			</span>
-			{#if item.role === 'assistant'}
+			{#if item.role === 'assistant' && containsCode(item.content)}
 				<button
 					class="ml-2 bg-green-500 text-white text-xs p-1 rounded hover:bg-green-600"
 					on:click={() => loadCode(index)}
