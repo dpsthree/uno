@@ -1,7 +1,7 @@
 import { localStorageStore } from "./localStorage";
 
 export interface ConversationEntry {
-	role: string;
-	content: string;
+  user: { role: 'user', content: string}
+  assistant: { role: 'assistant', content: string}
 }
 export const conversationHistory = localStorageStore<ConversationEntry[]>("conversationHistory", []);

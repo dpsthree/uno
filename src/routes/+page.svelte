@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { conversationHistory } from '../lib/conversation';
+	import { conversationHistory, type ConversationEntry } from '../lib/conversation';
 	import History from '../lib/history.svelte';
 
 	let iframeBlobUrl = '';
@@ -37,10 +37,20 @@
 		}
 		iframeBlobUrl = URL.createObjectURL(blob);
 	}
+  function createLinearHistory(history: ConversationEntry[]){
+    let linearHistory = [];
+    for(let i = 0; i < history.length; i++){
+      linearHistory.push(history[i].user);
+      linearHistory.push(history[i].assistant);
+    }
+    return linearHistory;
+  }
 
 	async function handleSearch() {
-		// Update the conversation history with the user's message
-		conversationHistory.update((history) => [...history, { role: 'user', content: searchQuery }]);
+		let conversation: ConversationEntry = {
+			user: { role: 'user', content: searchQuery },
+			assistant: { role: 'assistant', content: '' }
+		};
 
 		const response = await fetch('/api', {
 			method: 'POST',
@@ -48,7 +58,7 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				history: $conversationHistory
+				history: [...createLinearHistory($conversationHistory), conversation.user],
 			})
 		});
 		if (response.status === 500) {
@@ -59,10 +69,8 @@
 				// Update the conversation history with the AI's response
 				const result = await response.json();
 				// Handle the successful response
-				conversationHistory.update((history) => [
-					...history,
-					{ role: 'assistant', content: result.answer }
-				]);
+				conversation.assistant = { role: 'assistant', content: result.answer };
+				conversationHistory.update((history) => [...history, conversation]);
 				updateIframe(result);
 			}
 		}

@@ -47,18 +47,26 @@
 
 <div class="bg-gray-100 p-4 rounded mt-4">
 	{#each history as item, index}
+		<div class="py-2 text-sm font-semibold mb-2 text-blue-600">
+			<strong>User:</strong>
+			<span class="cursor-pointer" on:click={() => toggleCollapse(index)}>
+				{$expandedContent.includes(index)
+					? item.user.content
+					: item.user.content.slice(0, 50) + '...'}
+			</span>
+		</div>
 		<div
-			class="py-2 text-sm font-semibold mb-2 {item.role === 'user'
-				? 'text-blue-600'
-				: 'text-pink-600'} {item.role === 'assistant' && $selectedIndex === index
+			class="py-2 text-sm font-semibold mb-2 text-pink-600 {$selectedIndex === index
 				? 'bg-gray-200'
 				: ''}"
 		>
-			<strong>{item.role}:</strong>
+			<strong>Assistant:</strong>
 			<span class="cursor-pointer" on:click={() => toggleCollapse(index)}>
-				{$expandedContent.includes(index) ? item.content : item.content.slice(0, 50) + '...'}
+				{$expandedContent.includes(index)
+					? item.assistant.content
+					: item.assistant.content.slice(0, 50) + '...'}
 			</span>
-			{#if item.role === 'assistant' && containsCode(item.content)}
+			{#if containsCode(item.assistant.content)}
 				<button
 					class="ml-2 bg-green-500 text-white text-xs p-1 rounded hover:bg-green-600"
 					on:click={() => loadCode(index)}
