@@ -1,3 +1,7 @@
-import { writable } from 'svelte/store';
+import { localStorageStore } from "./localStorage";
 
-export const conversationHistory = writable<{role: string, content: string}[]>([]);
+export interface ConversationEntry {
+	role: string;
+	content: string;
+}
+export const conversationHistory = localStorageStore("conversationHistory", []);
